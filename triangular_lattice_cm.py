@@ -52,6 +52,55 @@ def plot_sorted_point_array(p_sorted_point_array):
     plt.show()
 
 
+def is_boundary_dumbbell(px,py):
+    return px < 0 or py < 0 or px >= const.X_SIZE-1 or py >= const.Y_SIZE
+
+def plot_dumbbell_array(p_dumbbell_list):
+
+    u_x_values = []
+    c_x_values = []
+    d_x_values = []
+    u_y_values = []
+    c_y_values = []
+    d_y_values = []
+    for dumbbell in p_dumbbell_list:
+        u_x_values.append(dumbbell.u.x)
+        c_x_values.append(dumbbell.c.x)
+        d_x_values.append(dumbbell.d.x)
+        u_y_values.append(dumbbell.u.y)
+        c_y_values.append(dumbbell.c.y)
+        d_y_values.append(dumbbell.d.y)
+
+    labels = []
+    for i in range(0, const.X_SIZE - 1):
+        for j in range(0, const.Y_SIZE):
+            labels.append("(" + str(i) + "," + str(j) + ")")
+    fig, ax = plt.subplots()
+    ax.scatter(c_x_values, c_y_values)
+    for i, txt in enumerate(labels):
+        ax.annotate(txt, (c_x_values[i], c_y_values[i]))
+    plt.scatter(c_x_values, c_y_values, c='y')
+    plt.scatter(u_x_values, u_y_values, c='b')
+    plt.scatter(d_x_values, d_y_values, c='b')
+    # plt.show()
+
+
+    dumbbell_array = np.array(p_dumbbell_list).reshape(const.X_SIZE-1,const.Y_SIZE)
+    for i in range(0, dumbbell_array.shape[0]):
+        for j in range(0, dumbbell_array.shape[1]):
+            d = dumbbell_array[i, j]
+            plt.plot([d.u.x,d.d.x],[d.u.y,d.d.y])
+            if is_boundary_dumbbell(i,j-1) is False:
+                ld = dumbbell_array[i,j-1]
+                plt.plot([d.u.x,ld.d.x],[d.u.y,ld.d.y])
+            if is_boundary_dumbbell(i+1,j-1) is False:
+                rd = dumbbell_array[i+1,j-1]
+                plt.plot([d.u.x,rd.d.x],[d.u.y,rd.d.y])
+
+    plt.show()
+
+
+
 def is_boundary_point(px, py):
     return px < 0 or py < 0 or px >= const.X_SIZE or py >= const.Y_SIZE
 
@@ -184,4 +233,5 @@ mid_x_list, mid_y_list, mid_pt_list = get_mid_of_nbr_pts(sorted_point_array)
 # write_mid_points_to_a_file(mid_x_list,mid_y_list)
 # plot_points_with_mid_points(sorted_point_array, mid_x_list, mid_y_list)
 dumbbell_list = get_dumbbell_list(mid_pt_list)
-plot_dumbbell_list(dumbbell_list)
+# plot_dumbbell_list(dumbbell_list)
+plot_dumbbell_array(dumbbell_list)
