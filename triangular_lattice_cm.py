@@ -122,13 +122,19 @@ def plot_points_with_mid_points(p_sorted_point_array, mid_pt_x_valus, mid_pt_y_v
     plt.scatter(mid_pt_x_valus, mid_pt_y_values,c='r',marker='o',s=10)
     plt.show()
 
+
+def write_mid_points_to_a_file(p_mid_x_list,p_mid_y_list):
+    with open('config/cm-data.dat', 'w') as cmd_data_file:
+        cmd_data_file.write(''.join('%s \t %s\n' % x for x in zip(p_mid_x_list,p_mid_y_list)))
+        # np.savetxt(p_mid_x_list,p_mid_y_list)
+
+
 input_data = get_input_data()
 sorted_point_list = get_sorted_points(input_data)
 sorted_point_array = np.transpose(np.array(sorted_point_list))
 # print_two_d_array(sorted_point_array)
 # plot_sorted_point_array(sorted_point_array)
 mid_x_list, mid_y_list = get_mid_of_nbr_pts(sorted_point_array)
-with open('CM-data.dat', 'w') as f:
-    for f1, f2 in zip(mid_x_list, mid_y_list):
-        print(f1, f2, file=f)
-plot_points_with_mid_points(sorted_point_array, mid_x_list, mid_y_list)
+write_mid_points_to_a_file(mid_x_list,mid_y_list)
+# plot_points_with_mid_points(sorted_point_array, mid_x_list, mid_y_list)
+
