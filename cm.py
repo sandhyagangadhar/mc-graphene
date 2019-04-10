@@ -3,9 +3,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 from point import Point
 import csv
-CCDISTANCE=0.154
+CCDISTANCE=1.0
 X_SIZE = 29
-Y_SIZE = 100
+Y_SIZE = 10
 ATOM_SIZE = X_SIZE * Y_SIZE
 
 def print_two_d_array(arr):
@@ -27,8 +27,8 @@ def get_input_data():
 
 def get_CM2darray(p_input_data):
     point_list = []
-    for i in range(0, ATOM_SIZE, Y_SIZE):
-        t = p_input_data[i:i + Y_SIZE]
+    for i in range(0, ATOM_SIZE, X_SIZE):
+        t = p_input_data[i:i + X_SIZE]
         point_list.append([Point(val[0], val[1]) for val in t])
     return point_list
 
@@ -92,6 +92,7 @@ def plot_dbpts_withindex(p_CM_array, db_dny_list, db_upy_list):
     # plt.scatter(x_values, db_upy_list)
     plt.scatter(x_values, y_values,c='b')
     # plt.scatter(x_values, db_dny_list,c='r',marker='o',s=10)
+    # plt.scatter(x_values, db_upy_list,c='y',marker='o',s=10)
 
     plt.show()
 
@@ -99,8 +100,8 @@ def plot_dbpts_withindex(p_CM_array, db_dny_list, db_upy_list):
 input_data = get_input_data()
 
 CM_list = get_CM2darray(input_data)
-# CM_array = np.transpose(np.array(CM_list))
-CM_array = np.array(CM_list)
+CM_array = np.transpose(np.array(CM_list))
+# CM_array = np.array(CM_list)
 print(CM_array.shape[0])
 print(CM_array.shape[1])
 
