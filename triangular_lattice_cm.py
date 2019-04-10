@@ -159,10 +159,20 @@ def plot_dumbbell_list(p_dumbbell_list):
         u_y_values.append(dumbbell.u.y)
         c_y_values.append(dumbbell.c.y)
         d_y_values.append(dumbbell.d.y)
-    plt.scatter(u_x_values, u_y_values, c='b')
+
+    labels = []
+    for i in range(0, const.X_SIZE - 1):
+        for j in range(0, const.Y_SIZE):
+            labels.append("(" + str(i) + "," + str(j) + ")")
+    fig, ax = plt.subplots()
+    ax.scatter(c_x_values, c_y_values)
+    for i, txt in enumerate(labels):
+        ax.annotate(txt, (c_x_values[i], c_y_values[i]))
     plt.scatter(c_x_values, c_y_values, c='y')
+    plt.scatter(u_x_values, u_y_values, c='b')
     plt.scatter(d_x_values, d_y_values, c='b')
     plt.show()
+    print(p_dumbbell_list)
 
 
 input_data = get_input_data()

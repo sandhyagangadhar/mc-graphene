@@ -1,5 +1,8 @@
+from point import Point
+
+
 class Dumbbell:
-    def __init__(self, u, c, d):
+    def __init__(self, u: Point, c: Point, d: Point):
         self.u = u
         self.c = c
         self.d = d
