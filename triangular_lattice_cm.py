@@ -52,11 +52,11 @@ def plot_sorted_point_array(p_sorted_point_array):
     plt.show()
 
 
-def is_boundary_dumbbell(px,py):
-    return px < 0 or py < 0 or px >= const.X_SIZE-1 or py >= const.Y_SIZE
+def is_boundary_dumbbell(px, py):
+    return px < 0 or py < 0 or px >= const.X_SIZE - 1 or py >= const.Y_SIZE
+
 
 def plot_dumbbell_array(p_dumbbell_list):
-
     u_x_values = []
     c_x_values = []
     d_x_values = []
@@ -85,20 +85,29 @@ def plot_dumbbell_array(p_dumbbell_list):
     # plt.show()
 
 
-    dumbbell_array = np.array(p_dumbbell_list).reshape(const.X_SIZE-1,const.Y_SIZE)
+    dumbbell_array = np.array(p_dumbbell_list).reshape(const.X_SIZE - 1, const.Y_SIZE)
     for i in range(0, dumbbell_array.shape[0]):
         for j in range(0, dumbbell_array.shape[1]):
+            additionalStep = False
             d = dumbbell_array[i, j]
-            plt.plot([d.u.x,d.d.x],[d.u.y,d.d.y])
-            if is_boundary_dumbbell(i,j-1) is False:
-                ld = dumbbell_array[i,j-1]
-                plt.plot([d.u.x,ld.d.x],[d.u.y,ld.d.y])
-            if is_boundary_dumbbell(i+1,j-1) is False:
-                rd = dumbbell_array[i+1,j-1]
-                plt.plot([d.u.x,rd.d.x],[d.u.y,rd.d.y])
+            plt.plot([d.u.x, d.d.x], [d.u.y, d.d.y], c='b')
+            if is_boundary_dumbbell(i, j - 1) is False:
+                ld = dumbbell_array[i, j - 1]
+                if ld.d.x > d.u.x:
+                    if is_boundary_dumbbell(i - 1, j - 1) is False:
+                        additionalStep = True
+                        ld = dumbbell_array[i - 1, j - 1]
+                plt.plot([d.u.x, ld.d.x], [d.u.y, ld.d.y], c='b')
+            if additionalStep:
+                if is_boundary_dumbbell(i, j - 1) is False:
+                    rd = dumbbell_array[i, j - 1]
+                    plt.plot([d.u.x, rd.d.x], [d.u.y, rd.d.y], c='b')
+            else:
+                if is_boundary_dumbbell(i + 1, j - 1) is False:
+                    rd = dumbbell_array[i + 1, j - 1]
+                    plt.plot([d.u.x, rd.d.x], [d.u.y, rd.d.y], c='b')
 
     plt.show()
-
 
 
 def is_boundary_point(px, py):
