@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import random
 
 import constants as const
 from dumbbell import Dumbbell
@@ -12,9 +13,10 @@ def print_two_d_array(arr):
         for j in range(0, arr.shape[1]):
             print(arr[i, j])
 
+f1 = open("cmdata.dat", "w")
 
 def get_input_data():
-    input_file = open("config/input.dat", "r")
+    input_file = open("config/input1.dat", "r")
     d = []
     for i in range(0, const.ATOM_SIZE):
         line = input_file.readline()
@@ -91,20 +93,22 @@ def plot_dumbbell_array(p_dumbbell_list):
     # plt.show()
 
     dumbbell_array = np.array(p_dumbbell_list).reshape(const.X_SIZE - 1, const.Y_SIZE)
+
     for i in range(0, dumbbell_array.shape[0]):
         for j in range(0, dumbbell_array.shape[1]):
             d = dumbbell_array[i, j]
-            plt.plot([d.u.x, d.d.x], [d.u.y, d.d.y], c='b')
+            f1.write(str(d))
+            plt.plot([d.u.x, d.d.x], [d.u.y, d.d.y], c='r')
             if isPointOutOfBoundary(i, j - 1) is False:
                 ld = dumbbell_array[i, j - 1]
-                if ld.d.x < d.u.x:
-                    connect(d, dumbbell_array, i, j - 1)
-                    connect(d, dumbbell_array, i + 1, j - 1)
-                else:
-                    connect(d, dumbbell_array, i - 1, j - 1)
-                    connect(d, dumbbell_array, i, j - 1)
+                # if ld.d.x < d.u.x:
+                    # connect(d, dumbbell_array, i, j - 1)
+                    # connect(d, dumbbell_array, i + 1, j - 1)
+                # else:
+                #     connect(d, dumbbell_array, i - 1, j - 1)
+                #     connect(d, dumbbell_array, i, j - 1)
+    f1.close()
     plt.show()
-
 
 def is_boundary_point(px, py):
     return px < 0 or py < 0 or px >= const.X_SIZE or py >= const.Y_SIZE
@@ -178,13 +182,6 @@ def plot_points_with_mid_points(p_sorted_point_array, mid_pt_x_valus, mid_pt_y_v
     plt.scatter(mid_pt_x_valus, mid_pt_y_values, c='r', marker='o', s=10)
     plt.show()
 
-
-def write_mid_points_to_a_file(p_mid_x_list, p_mid_y_list):
-    with open('config/cm-data.dat', 'w') as cmd_data_file:
-        cmd_data_file.write(''.join('%s \t %s\n' % x for x in zip(p_mid_x_list, p_mid_y_list)))
-        # np.savetxt(p_mid_x_list,p_mid_y_list)
-
-
 def get_dumbbell(ppt):
     u = Point(ppt.x, ppt.y + (const.CCDISTANCE / 2.0))
     c = ppt
@@ -228,6 +225,13 @@ def plot_dumbbell_list(p_dumbbell_list):
     plt.show()
     print(p_dumbbell_list)
 
+# def write_data_to_file(p_dumbbell_list):
+#     dumbbell_array = np.array(p_dumbbell_list).reshape(const.X_SIZE - 1, const.Y_SIZE)
+#     for i in range(0, dumbbell_array.shape[0]):
+#         for j in range(0, dumbbell_array.shape[1]):
+#             data = dumbbell_array[i, j]
+#             f1.write(str(data))
+#     f1.close()
 
 input_data = get_input_data()
 sorted_point_list = get_sorted_points(input_data)
@@ -238,5 +242,20 @@ mid_x_list, mid_y_list, mid_pt_list = get_mid_of_nbr_pts(sorted_point_array)
 # write_mid_points_to_a_file(mid_x_list,mid_y_list)
 # plot_points_with_mid_points(sorted_point_array, mid_x_list, mid_y_list)
 dumbbell_list = get_dumbbell_list(mid_pt_list)
+#d= np.array(dumbbell_list).reshape(const.X_SIZE - 1, const.Y_SIZE)
+#np.savetxt("cm",)
+#f1.write(str(d))
+#print(d)
+#f1.close()
 # plot_dumbbell_list(dumbbell_list)
 plot_dumbbell_array(dumbbell_list)
+#f1.write(float(dumbbell_list))
+#write_data_to_file(dumbbell_list)
+
+print(len(dumbbell_list))
+rand_db = dumbbell_list[random.randrange(len(dumbbell_list))]
+print(rand_db)
+#print(rand_db.u,rand_db.c,rand_db.d)
+
+
+
