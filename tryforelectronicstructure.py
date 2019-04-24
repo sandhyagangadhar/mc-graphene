@@ -9,8 +9,6 @@ from point3d import Point
 
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
-# ax.view_init(azim=90, elev=10)
-ax.set_zlim3d(-10,10)
 ax.view_init(azim=90, elev=0)
 
 def print_two_d_array(arr):
@@ -178,8 +176,9 @@ def plot_dumbbell_list(p_dumbbell_list):
 def connect(pd: Dumbbell, p_dumbbell_array: [], pi: int, pj: int):
     if isPointOutOfBoundary(pi, pj) is False:
         sourceDumbell = p_dumbbell_array[pi, pj]
-        # ax.plot([pd.u.x, sourceDumbell.d.x], [pd.u.y, sourceDumbell.d.y], [pd.u.z, sourceDumbell.u.z], c='b')
         ax.plot([pd.u.x, sourceDumbell.d.x], [pd.u.y, sourceDumbell.d.y], [pd.u.z, sourceDumbell.u.z], c='b')
+        ax.plot([pd.u.x, pd.d.x], [pd.u.y, pd.d.y], [pd.u.z, pd.u.z+10], c='r')
+        ax.plot([sourceDumbell.u.x, sourceDumbell.d.x], [sourceDumbell.u.y, sourceDumbell.d.y], [sourceDumbell.u.z, sourceDumbell.u.z+10], c='r')
 
 def plot_dumbbell_array(p_dumbbell_list):
     u_x_values = []
@@ -218,6 +217,7 @@ def plot_dumbbell_array(p_dumbbell_list):
         for j in range(0, dumbbell_array.shape[1]):
             d = dumbbell_array[i, j]
             ax.plot([d.u.x, d.d.x], [d.u.y, d.d.y], [d.u.z, d.d.z], c='b',marker='o')
+            # ax.plot([d.u.x, d.u.y,0],[d.d.x, d.d.y,0],  c='b',marker='o')
             if isPointOutOfBoundary(i, j - 1) is False:
                 ld = dumbbell_array[i, j - 1]
                 if ld.d.x < d.u.x:
