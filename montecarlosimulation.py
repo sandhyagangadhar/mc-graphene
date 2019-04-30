@@ -1,15 +1,19 @@
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
+import math
 import random as rd
+from numpy import linalg as Dist
 
 import constants as const
 from dumbbell import Dumbbell
 from point3d import Point
 
 fig = plt.figure()
-ax = fig.add_subplot(111, projection='3d')
-ax.view_init(azim=90, elev=0)
+ax = fig.gca(projection='3d')
+#ax.view_init(azim=90, elev=50)
+
+f1=open("data.dat","w")
 
 def print_two_d_array(arr):
     print(arr.shape)
@@ -89,13 +93,9 @@ def plot_points_with_mid_points(p_sorted_point_array, mid_pt_x_values, mid_pt_y_
             y_values.append(pt.y)
             z_values.append(pt.z)
     ax.scatter(mid_pt_x_values, mid_pt_y_values, mid_pt_z_values, c='r', marker='o')
-    
-    #fig = plt.figure()
-    #ax = fig.add_subplot(212, projection='3d')
+
     ax.scatter(x_values, y_values, z_values, c='b', marker='o')
 
-  #  plt.plot(x_values, y_values, z_values, c='b')
-   # plt.scatter(mid_pt_x_values, mid_pt_y_values, mid_pt_z_values, c='r', marker='o')
     plt.show()
 
 
@@ -113,12 +113,6 @@ def plot_sorted_point_array(p_sorted_point_array):
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
     ax.plot(x_values, y_values, z_values, c='r', marker='o')
-  #          labels.append("(" + str(i) + "," + str(j) + ")")
-  #  fig, ax = plt.subplots()
-  #  ax.scatter(x_values, y_values)
-   # for i, txt in enumerate(labels):
-    #    ax.annotate(txt, (x_values[i], y_values[i]))
- #   plt.plot(x_values, y_values, z_values)
     plt.show()
 
 
@@ -161,24 +155,19 @@ def plot_dumbbell_list(p_dumbbell_list):
         c_z_values.append(dumbbell.c.y)
         d_z_values.append(dumbbell.d.y)
 
-    labels = []
-    for i in range(0, const.X_SIZE - 1):
-        for j in range(0, const.Y_SIZE):
-            labels.append("(" + str(i) + "," + str(j) + ")")
-    for i, txt in enumerate(labels):
-        ax.annotate(txt, (c_x_values[i], c_y_values[i]))
-    ax.scatter(c_x_values, c_y_values, c_z_values, c='y')
-    ax.scatter(u_x_values, u_y_values, u_z_values, c='b')
-    ax.scatter(d_x_values, d_y_values, d_z_values, c='b')
+
+    ax.plot(u_x_values, u_y_values, u_z_values, c='b', marker ='o')
+    ax.plot(d_x_values, d_y_values, d_z_values, c='b', marker ='o')
+ #   ax.set_zlim(-1,1)
     plt.show()
-    print(p_dumbbell_list)
+
 
 def connect(pd: Dumbbell, p_dumbbell_array: [], pi: int, pj: int):
     if isPointOutOfBoundary(pi, pj) is False:
         sourceDumbell = p_dumbbell_array[pi, pj]
-        ax.plot([pd.u.x, sourceDumbell.d.x], [pd.u.y, sourceDumbell.d.y], [pd.u.z, sourceDumbell.u.z], c='b')
-        ax.plot([pd.u.x, pd.d.x], [pd.u.y, pd.d.y], [pd.u.z, pd.u.z+10], c='r')
-        ax.plot([sourceDumbell.u.x, sourceDumbell.d.x], [sourceDumbell.u.y, sourceDumbell.d.y], [sourceDumbell.u.z, sourceDumbell.u.z+10], c='r')
+        ax.plot([pd.u.x, sourceDumbell.d.x], [pd.u.y, sourceDumbell.d.y],c='b',marker='o')
+        f1.write( '{:f}\t{:f}\t{:f}\n'.format(pd.u.x, pd.u.y, pd.u.z))
+        f1.write( '{:f}\t{:f}\t{:f}\n'.format(sourceDumbell.d.x, sourceDumbell.d.y, sourceDumbell.d.z))
 
 def plot_dumbbell_array(p_dumbbell_list):
     u_x_values = []
@@ -206,18 +195,16 @@ def plot_dumbbell_array(p_dumbbell_list):
         for j in range(0, const.Y_SIZE):
             labels.append("(" + str(i) + "," + str(j) + ")")
 
-  #  for i, txt in enumerate(labels):
- #       ax.annotate(txt, (c_x_values[i], c_y_values[i]))
-    ax.scatter(c_x_values, c_y_values, c_z_values, c='y')
-    ax.scatter(u_x_values, u_y_values, u_z_values, c='b')
-    ax.scatter(d_x_values, d_y_values, d_z_values, c='b')
 
+    array=[]
     dumbbell_array = np.array(p_dumbbell_list).reshape(const.X_SIZE - 1, const.Y_SIZE)
     for i in range(0, dumbbell_array.shape[0]):
         for j in range(0, dumbbell_array.shape[1]):
             d = dumbbell_array[i, j]
             ax.plot([d.u.x, d.d.x], [d.u.y, d.d.y], [d.u.z, d.d.z], c='b',marker='o')
-            # ax.plot([d.u.x, d.u.y,0],[d.d.x, d.d.y,0],  c='b',marker='o')
+            f1.write( '{:f}\t{:f}\t{:f}\n'.format(d.u.x, d.u.y, d.u.z))
+            f1.write( '{:f}\t{:f}\t{:f}\n'.format(d.d.x, d.d.y, d.d.z))
+
             if isPointOutOfBoundary(i, j - 1) is False:
                 ld = dumbbell_array[i, j - 1]
                 if ld.d.x < d.u.x:
@@ -226,7 +213,135 @@ def plot_dumbbell_array(p_dumbbell_list):
                 else:
                     connect(d, dumbbell_array, i - 1, j - 1)
                     connect(d, dumbbell_array, i, j - 1)
+    f1.close()
+ #   ax.set_zlim(-1,1)
+    
     plt.show()
+    print(dumbbell_array.shape[0])
+    print(dumbbell_array.shape[1])
+
+def find_the_energy(pd: Dumbbell,p_dumbbell_array: [], pi: int, pj: int):
+    pd_u0=np.array((pd.u.x,pd.u.y,pd.u.z))
+    pd_d0=np.array((pd.d.x,pd.d.y,pd.d.z))
+    pd_u=np.array((pd.u.x+0.05,pd.u.y+0.05,pd.u.z+0.05))
+    pd_d=np.array((pd.d.x-0.05,pd.d.y-0.05,pd.d.z-0.05))
+
+    ld=p_dumbbell_array[pi,pj-1]
+
+    tl0=tr0=bl0=br0=0
+    tl=tr=bl=br=0
+
+    if ld.d.x < pd.u.x:
+        if isPointOutOfBoundary(pi, pj-1) is False:
+            pd_top_left=p_dumbbell_array[pi,pj-1]
+            pd_top_left_d=np.array((pd_top_left.d.x,pd_top_left.d.y,pd_top_left.d.z))
+        else:
+            pd_top_left_d=np.array((0.0,0.0,0.0))
+
+        if isPointOutOfBoundary(pi, pj+1) is False:
+            pd_bottom_left=p_dumbbell_array[pi,pj+1]
+            pd_bottom_left_u=np.array((pd_bottom_left.u.x,pd_bottom_left.u.y,pd_bottom_left.u.z))
+        else:
+            pd_bottom_left_u=np.array((0.0,0.0,0.0))
+
+        if isPointOutOfBoundary(pi+1, pj-1) is False:
+            pd_top_right=p_dumbbell_array[pi+1,pj-1]
+            pd_top_right_d=np.array((pd_top_right.d.x,pd_top_right.d.y,pd_top_right.d.z))
+        else:
+            pd_top_right_d=np.array((0.0,0.0,0.0))
+
+        if isPointOutOfBoundary(pi+1, pj+1) is False:
+            pd_bottom_right=p_dumbbell_array[pi+1,pj+1]
+            pd_bottom_right_u=np.array((pd_bottom_right.u.x,pd_bottom_right.u.y,pd_bottom_right.u.z))
+        else:
+            pd_bottom_right_u=np.array((0.0,0.0,0.0))
+    else:
+        if isPointOutOfBoundary(pi-1, pj-1) is False:
+            pd_top_left=p_dumbbell_array[pi-1,pj-1]
+            pd_top_left_d=np.array((pd_top_left.d.x,pd_top_left.d.y,pd_top_left.d.z))
+        else:
+            pd_top_left_d=np.array((0.0,0.0,0.0))
+
+        if isPointOutOfBoundary(pi-1, pj+1) is False:
+            pd_bottom_left=p_dumbbell_array[pi-1,pj+1]
+            pd_bottom_left_u=np.array((pd_bottom_left.u.x,pd_bottom_left.u.y,pd_bottom_left.u.z))
+        else:
+            pd_bottom_left_u=np.array((0.0,0.0,0.0))
+
+        if isPointOutOfBoundary(pi, pj-1) is False:
+            pd_top_right=p_dumbbell_array[pi,pj-1]
+            pd_top_right_d=np.array((pd_top_right.d.x,pd_top_right.d.y,pd_top_right.d.z))
+        else:
+            pd_top_right_d=np.array((0.0,0.0,0.0))
+
+        if isPointOutOfBoundary(pi, pj+1) is False:
+            pd_bottom_right=p_dumbbell_array[pi,pj+1]
+            pd_bottom_right_u=np.array((pd_bottom_right.u.x,pd_bottom_right.u.y,pd_bottom_right.u.z))
+        else:
+            pd_bottom_right_u=np.array((0.0,0.0,0.0))
+
+    pd_Energy0=Dist.norm(pd_u0-pd_d0)+Dist.norm(pd_u0-pd_top_left_d)+Dist.norm(pd_u0-pd_top_right_d)+Dist.norm(pd_d0-pd_bottom_left_u)+Dist.norm(pd_d0-pd_bottom_right_u)
+    pd_Energy=Dist.norm(pd_u-pd_d)+Dist.norm(pd_u-pd_top_left_d)+Dist.norm(pd_u-pd_top_right_d)+Dist.norm(pd_d-pd_bottom_left_u)+Dist.norm(pd_d-pd_bottom_right_u)
+
+    return(pd_Energy0,pd_Energy)
+
+def mc_simulation(p_dumbbell_list):
+    count=0
+    dumbbell_array = np.array(dumbbell_list).reshape(const.X_SIZE - 1, const.Y_SIZE)
+    for k in range(0,100):
+        i=np.random.randint(0, const.X_SIZE - 1)
+        j=np.random.randint(0, const.Y_SIZE)
+        d=dumbbell_array[i,j]
+        energy0,energy1=find_the_energy(d,dumbbell_array,i,j)
+        deltaE=energy1-energy0
+        a1=math.exp(0)
+        a=math.exp(-(deltaE))
+        if((deltaE<0.0) or (np.random.uniform(0,1,1)<a)):
+            count=count+1
+            dumbbell_array[i,j].u.x=d.u.x+0.05
+            dumbbell_array[i,j].u.y=d.u.y+0.05
+            dumbbell_array[i,j].u.z=d.u.z+0.05
+            dumbbell_array[i,j].d.x=d.d.x-0.05
+            dumbbell_array[i,j].d.y=d.d.y-0.05
+            dumbbell_array[i,j].d.z=d.d.z-0.05
+
+
+           # print(math.exp(energy0-energy1))
+            print(deltaE,a,np.random.uniform(0,1,1))
+    print(count)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  #  utr=np.array((d.u.x+0.05,d.u.y+0.05,d.u.z+0.05))
+   # dtr=np.array((d.d.x-0.05,d.d.y-0.05,d.d.z-0.05))
+    #x1=(d.u.x+d.d.x)/2.0
+    #y1=(d.u.y+d.d.y)/2.0
+    #z1=(d.u.z+d.d.z)/2.0
+    #if(((round(x1,4)==round(d.c.x,4)) and (round(y1,4)==round(d.c.y,4)) and (round(z1,4)==round(d.c.z,4)))):
+     #   r0=Dist.norm(u0-d0)
+      #  print(r0)
+
+
+
+
+
+
 
 
 
@@ -242,25 +357,32 @@ mid_x_list, mid_y_list, mid_z_list, mid_pt_list = get_mid_of_nbr_pts(sorted_poin
 #print(mid_pt_list)
 #plot_points_with_mid_points(sorted_point_array, mid_x_list, mid_y_list, mid_z_list)
 dumbbell_list = get_dumbbell_list(mid_pt_list)
-plot_dumbbell_array(dumbbell_list)
+#plot_dumbbell_list(dumbbell_list)
+#plot_dumbbell_array(dumbbell_list)
+mc_simulation(dumbbell_list)
+
+#def energy_calculation(p_dumbbell_list,i,j):
+#dumbbell_array = np.array(dumbbell_list).reshape(const.X_SIZE - 1, const.Y_SIZE)
+#  i=np.random.randint(0, const.X_SIZE - 1)
+#   j=np.random.randint(0, const.Y_SIZE)
+#i=3
+#j=4
+#d=dumbbell_array[i,j]
+#energy0,energy1=find_the_energy(d,dumbbell_array,i,j)
+#print(energy0,energy1)
+#a1=np.array((d.u.x,d.u.y,d.u.z))
+#b1=np.array((d.d.x,d.d.y,d.d.z))
+#d0=Dist.norm(a1-b1)
+#print(d0)
 
 
 #...........Monte Carlo simulation to get equilibrium Configuration............#
 
-#def mc_simulation(p_dumbbell_list):
- #   d = np.array(dumbbell_list).reshape(const.X_SIZE - 1, const.Y_SIZE)
-  #  i=np.random.randint(0, const.X_SIZE - 1)
 
-#d=dumbbell_array(2,3)
 
-#mc_simulation(dumbbell_list)
 
-#dumbbell_array = np.array(dumbbell_list).reshape(const.X_SIZE - 1, const.Y_SIZE)
-#i=np.random.randint(0, const.X_SIZE - 1)
-#j=np.random.randint(0, const.Y_SIZE)
-#d=dumbbell_array[i,j]
-#print(d.u)
-    
+
+
 
 
 
